@@ -1,4 +1,4 @@
-const BASE_URL = "https://script.google.com/macros/s/AKfycbwImuMkCbnKm1BrWOPfH_4skVaJgGz9VIuRoJQI3f7vUU2zZf8MnQ4PFLfYhGfkUQmD/exec";
+const BASE_URL = "https://script.google.com/macros/s/AKfycbx21Y-ZjTWbsWSzzbceJJOoBHShbJrMP12GLbd95cbx-FJ9emUx3OPxjP-hi1v9vC2w/exec";
 
 let groupMembers = [];
 
@@ -268,6 +268,9 @@ function fetchMainStudent() {
     return;
   }
 
+  // SHOW LOADER
+  document.getElementById("overlayLoader").style.display = "flex";
+
   fetch(`${BASE_URL}?mssid=${encodeURIComponent(mssid)}`)
     .then(res => res.json())
     .then(data => {
@@ -283,6 +286,9 @@ function fetchMainStudent() {
     .catch(err => {
       console.log("Fetch error:", err);
       alert("Error fetching student details");
+    })
+    .finally(() => {
+      document.getElementById("overlayLoader").style.display = "none";
     });
 }
 
@@ -296,6 +302,9 @@ function fetchGroupMember(i) {
     alert("Enter MSS ID");
     return;
   }
+
+  // SHOW LOADER
+  document.getElementById("overlayLoader").style.display = "flex";
 
   fetch(`${BASE_URL}?mssid=${encodeURIComponent(mssid)}`)
     .then(res => res.json())
@@ -321,9 +330,11 @@ function fetchGroupMember(i) {
     .catch(err => {
       console.log("Fetch error:", err);
       alert("Error fetching student details");
+    })
+    .finally(() => {
+      document.getElementById("overlayLoader").style.display = "none";
     });
 }
-
 /* ================= SUBMIT REQUEST ================= */
 /* ================= SUBMIT REQUEST ================= */
 
@@ -375,16 +386,22 @@ function submitRequest() {
   }
 
   // ================= PAYMENT VALIDATION =================
-  if (!val("category") ||
-      !val("subCategory") ||
-      !val("paymentMode") ||
-      !val("details") ||
-      !val("dueDate") ||
-      !val("attachment")) {
+  // ================= PAYMENT VALIDATION =================
+if (!val("category") ||
+    !val("subCategory") ||
+    !val("paymentMode") ||
+    !val("details") ||
+    !val("dueDate")) {
 
-    alert("Fill all payment details");
-    return;
-  }
+  alert("Fill all payment details");
+  return;
+}
+
+// 🔹 Attachment Mandatory for BOTH request types
+if (!val("attachment")) {
+  alert("Please attach the required file before submitting.");
+  return;
+}
 
   // ================= LOADING =================
   document.getElementById("submitBtn").disabled = true;
